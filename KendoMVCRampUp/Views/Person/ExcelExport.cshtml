@@ -1,0 +1,102 @@
+﻿<div id="grid"></div>
+
+<script>
+
+    function parseDatesForExport(sheet, dateColumnIndexes)
+    {
+        for (var rowIndex = 1; rowIndex < sheet.rows.length; rowIndex++) {
+            var row = sheet.rows[rowIndex];
+
+            for (var colIndex = 0; colIndex < dateColumnIndexes.length; colIndex++) {
+
+                var colNumberOnSheet = dateColumnIndexes[colIndex];
+
+                if (moment(row.cells[colNumberOnSheet-1].value).isValid())
+                    row.cells[colNumberOnSheet-1].value = moment(row.cells[colNumberOnSheet-1].value).format('DD-MMM-YYYY');
+
+            }
+        }
+    }
+
+    $(document).ready(function () {
+
+
+        $("#grid").kendoGrid({
+            dataSource: {
+                type:"aspnetmvc-ajax",
+                transport: {
+                    read: '@Url.Action("GetPeopleWithPagination", "Person")'
+                },
+                pageSize: 20,
+                serverPaging: true,
+                serverGrouping: true,
+                serverFiltering: true,
+                serverSorting: true,
+                schema: {
+                    data: 'data',
+                    total: 'total'
+                }
+            },
+            height: 550,
+            groupable: true,
+            sortable: true,
+            filterable: true,
+            pageable: { 
+                refresh: true,
+                pageSizes: [5, 10, 20, 30, 1000],
+                buttonCount: 5
+            },
+            toolbar: ["excel", {
+                name: "clearFilters",
+                text: "Clear Filters"
+            }],
+            excel: {
+                allPages: true,
+                fileName: "MyExampleWOrkbook.xlsx",
+                proxyURL: '@Url.Action("DownloadList", "Home")'
+            },
+            excelExport: function (e) {
+
+                // here to do custom work with cells
+
+                //var sheet = e.workbook.sheets[0];
+                //app.KendoExcel.ParseDatesForExport(sheet, [3, 8]);
+            },
+            columns: [{
+                field: "FirstName",
+                title: "First Name",
+                width: 200
+            }, {
+                field: "SecondName",
+                title: "Second Name"
+            }, {
+                field: "Age",
+                title: "Age"
+            }]
+        });
+
+        var menu = $("#menu2"),
+        original = menu.clone(true);
+
+        var initMenu = function () {
+            var orientation = "vertical";
+
+            menu = $("#menu2").kendoContextMenu({
+                orientation: orientation,
+                target: "#grid",
+                filter: "tr[role='row']",
+                animation: {
+                    open: { effects: "fadeIn" },
+                    duration: 500
+                },
+                select: function(e) {
+                    // Do something on select
+                    alert('Selected');
+                }
+            });
+        };
+
+        initMenu();
+                
+    });
+</script>

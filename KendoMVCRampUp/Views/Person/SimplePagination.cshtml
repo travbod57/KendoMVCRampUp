@@ -1,0 +1,69 @@
+﻿<div id="grid"></div>
+
+<script>
+    $(document).ready(function () {
+
+
+        $("#grid").kendoGrid({
+            dataSource: {
+                type:"aspnetmvc-ajax",
+                transport: {
+                    read: '@Url.Action("GetPeopleWithPagination", "Person")'
+                },
+                pageSize: 20,
+                serverPaging: true,
+                serverGrouping: true,
+                serverFiltering: true,
+                serverSorting: true,
+                schema: {
+                    data: 'data',
+                    total: 'total'
+                }
+            },
+            height: 550,
+            groupable: true,
+            sortable: true,
+            filterable: true,
+            pageable: { 
+                refresh: true,
+                pageSizes: [5, 10, 20, 30, 1000],
+                buttonCount: 5
+            },
+            columns: [{
+                field: "FirstName",
+                title: "First Name",
+                width: 200
+            }, {
+                field: "SecondName",
+                title: "Second Name"
+            }, {
+                field: "Age",
+                title: "Age"
+            }]
+        });
+
+        var menu = $("#menu2"),
+        original = menu.clone(true);
+
+        var initMenu = function () {
+            var orientation = "vertical";
+
+            menu = $("#menu2").kendoContextMenu({
+                orientation: orientation,
+                target: "#grid",
+                filter: "tr[role='row']",
+                animation: {
+                    open: { effects: "fadeIn" },
+                    duration: 500
+                },
+                select: function(e) {
+                    // Do something on select
+                    alert('Selected');
+                }
+            });
+        };
+
+        initMenu();
+                
+    });
+</script>
